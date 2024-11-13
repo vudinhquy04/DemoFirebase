@@ -3,8 +3,10 @@ package com.quyvd.demofirebase
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -26,6 +28,14 @@ class LoginActivity : AppCompatActivity() {
 
         var btnSignUp = findViewById<AppCompatButton>(R.id.btnSignUp)
         var btnLoginWithGoogle = findViewById<AppCompatButton>(R.id.btnLoginWithGoogle)
+
+        val btnLogin = findViewById<AppCompatButton>(R.id.btnLogin)
+
+        btnLogin.setOnClickListener {
+            val email = findViewById<EditText>(R.id.edtEmail).text.toString()
+            val password = findViewById<EditText>(R.id.edtPassword).text.toString()
+            loginUser(email, password)
+        }
 
         btnSignUp.setOnClickListener {
             val intent = Intent(this, SignUpActivity::class.java)
@@ -50,6 +60,21 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
+    }
+    fun loginUser(email: String, password: String) {
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val intent = Intent(this, MainActivity::class.java).apply {
+                        putExtra("email", email)
+                        putExtra("password", password)
+                    }
+                    startActivity(intent)
+                    finish()
+                } else {
+                    println("Đăng nhập thất bại: ${task.exception?.message}")
+                }
+            }
     }
 
     private fun googleSignIn() {
